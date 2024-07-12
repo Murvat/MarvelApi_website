@@ -27,7 +27,6 @@ const RandomChar = () => {
             loading: false,
             error: true
         })
-
     }
     const updateCharr = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
