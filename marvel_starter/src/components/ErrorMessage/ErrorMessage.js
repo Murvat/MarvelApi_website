@@ -7,7 +7,7 @@ const ErrorMessage = () => {
             width: '250px',
             height: '250px',
             objectFit: 'contain',
-            // margin: '0 auto'
+            margin: '0 auto'
         }} src={img} />
     )
 }
