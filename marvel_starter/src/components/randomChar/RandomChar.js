@@ -49,7 +49,8 @@ const RandomChar = () => {
     const updateCharr = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
         onCharLoading();
-        marvelService.getCharacter(id)
+        marvelService
+            .getCharacter(id)
             .then(onCharLoaded)
             .catch(onError)
     }

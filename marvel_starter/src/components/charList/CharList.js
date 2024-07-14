@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Spinner from '../Spinner/Spinner';
-const CharList = () => {
+const CharList = ({ onCharSelected }) => {
 
     const [state, setState] = useState({
         charList: [],
@@ -45,7 +45,8 @@ const CharList = () => {
             return (
                 <li
                     className="char__item"
-                    key={item.id}>
+                    key={item.id}
+                    onClick={() => onCharSelected(item.id)}>
                     <img src={item.thumbnail} alt={item.name} style={imgStyle} />
                     <div className="char__name">{item.name}</div>
                 </li>
