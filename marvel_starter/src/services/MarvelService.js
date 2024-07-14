@@ -2,9 +2,12 @@ import md5 from 'md5';
 
 
 class MarvelService {
+
     _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     _apiKey = '2f40d8e3128997a1b69208e193d5b33d'
     _privateKey = 'f190072fc4cca1a7ccecea1781f8a3e3b06bdbbc'
+    _baseOffset = 210;
+
 
     getResource = async (url) => {
         let res = await fetch(url);
@@ -15,8 +18,8 @@ class MarvelService {
         return await res.json();
     };
 
-    getAllCharacters = async () => {
-        const res = this.getResource(`${this._apiBase}characters?limit=9&offset=210&${this._authParams()}`);
+    getAllCharacters = async (offset = this._baseOffset) => {
+        const res = this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._authParams()}`);
         return res.data.results.map(this._transformCharacter)
     }
     getCharacter = async (id) => {

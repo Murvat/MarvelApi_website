@@ -8,23 +8,43 @@ const CharList = ({ onCharSelected }) => {
     const [state, setState] = useState({
         charList: [],
         loading: true,
-        error: false
+        error: false,
+        newItemLoading: false,
+        offset: 210,
+        charEnded: false,
     });
 
     const marvelService = new MarvelService();
 
     useEffect(() => {
-        console.log('d')
-        marvelService.getAllCharacters()
-            .then(onCharListLoaded)
-            .catch(onError)
+        onReguest(offset);
     }, [])
 
-    const onCharListLoaded = (charList) => {
+    const onReguest = (offset) => {
+        onCharListLoading();
+        marvelService
+            .getAllCharacters(offset)
+            .then(onCharListLoaded)
+            .catch(onError)
+    }
+    const onCharListLoading = () => {
         setState({
-            charList,
-            loading: false
+            newItemLoading: true,
         })
+    }
+
+    const onCharListLoaded = (newCharList) => {
+        let ended = false;
+        if (newCharList.lengh < 9) {
+            ended = true;
+        }
+        setState(({ offset, charList }) => ({
+            charList: [...charList, ...newCharList],
+            loading: false,
+            newItemLoading: false,
+            offset: offset + 9,
+            charEnded: ended
+        }))
     };
 
 
@@ -35,8 +55,9 @@ const CharList = ({ onCharSelected }) => {
             charList: [],
         })
     }
+
+
     const renderItems = (arr) => {
-        console.log('a')
         const items = arr.map(item => {
             let imgStyle = { 'objectFit': 'cover' };
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
@@ -59,7 +80,7 @@ const CharList = ({ onCharSelected }) => {
         )
     }
 
-    const { charList, loading, error } = state;
+    const { charList, loading, error, offset, newItemLoading, charEnded } = state;
     const items = renderItems(charList);
     const errorMessage = error ? <ErrorMessage /> : null;;
     const spinner = loading ? <Spinner /> : null;
@@ -69,10 +90,14 @@ const CharList = ({ onCharSelected }) => {
             {errorMessage}
             {spinner}
             {content}
-            <button className="button button__main button__long">
+            <button
+                disabled={newItemLoading}
+                style={{ 'display': charEnded ? 'none' : 'block' }}
+                onClick={() => onReguest(offset)}
+                className="button button__main button__long">
                 <div className="inner">load more</div>
             </button>
-        </div>
+        </div >
     )
 }
 
