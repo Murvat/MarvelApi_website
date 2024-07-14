@@ -17,7 +17,8 @@ const CharList = ({ onCharSelected }) => {
     const marvelService = new MarvelService();
 
     useEffect(() => {
-        onReguest(offset);
+        onReguest(state.offset);
+        console.log(charList)
     }, [])
 
     const onReguest = (offset) => {
@@ -29,16 +30,19 @@ const CharList = ({ onCharSelected }) => {
     }
     const onCharListLoading = () => {
         setState({
+            ...state,
             newItemLoading: true,
         })
     }
 
     const onCharListLoaded = (newCharList) => {
+        console.log(newCharList)
         let ended = false;
-        if (newCharList.lengh < 9) {
+        if (newCharList.length < 9) {
             ended = true;
         }
         setState(({ offset, charList }) => ({
+            ...state,
             charList: [...charList, ...newCharList],
             loading: false,
             newItemLoading: false,
@@ -50,9 +54,9 @@ const CharList = ({ onCharSelected }) => {
 
     const onError = () => {
         setState({
+            ...state,
             error: true,
             loading: false,
-            charList: [],
         })
     }
 
