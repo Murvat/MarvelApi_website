@@ -8,7 +8,7 @@ import decoration from '../../resources/img/vision.png';
 import { useState } from "react";
 
 const App = () => {
-
+    //state to get id of choosen char
     const [state, setState] = useState({
         selectedChart: null,
     })

@@ -8,7 +8,7 @@ class MarvelService {
     _privateKey = 'f190072fc4cca1a7ccecea1781f8a3e3b06bdbbc'
     _baseOffset = 210;
 
-
+    //getResource takes url as an argument then sends fetch reguest and hold it in res var
     getResource = async (url) => {
         let res = await fetch(url);
         if (!res.ok) {
@@ -17,11 +17,13 @@ class MarvelService {
 
         return await res.json();
     };
-
+    //getAll returns arr of  characters
     getAllCharacters = async (offset = this._baseOffset) => {
         const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._authParams()}`);
         return res.data.results.map(this._transformCharacter)
     }
+
+    //getChar returns only one char 
     getCharacter = async (id) => {
         const res = await this.getResource(`${this._apiBase}characters/${id}?&${this._authParams()}`);
         return this._transformCharacter(res.data.results[0]);

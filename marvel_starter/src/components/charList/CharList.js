@@ -17,8 +17,7 @@ const CharList = ({ onCharSelected }) => {
     const marvelService = new MarvelService();
 
     useEffect(() => {
-        onReguest(state.offset);
-        console.log(charList)
+        onReguest();
     }, [])
 
     const onReguest = (offset) => {
