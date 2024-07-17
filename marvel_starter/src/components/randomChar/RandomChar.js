@@ -12,9 +12,10 @@ const RandomChar = () => {
 
     const [state, setState] = useState(
         {
-            char: {},
-            loading: true,
-            error: false,
+            char: {},//initial state of character that is empty before render,
+            //after  getCharacter gets full
+            loading: true,//Spinner state
+            error: false,//error state
         }
     );
 
@@ -24,7 +25,7 @@ const RandomChar = () => {
         updateCharr();
     }, []);
 
-
+    //func called after data get fetched 
     const onCharLoaded = (char) => {
         setState({
             char,
@@ -32,6 +33,8 @@ const RandomChar = () => {
             error: false
         })
     }
+
+    //func called before data get fetched that pulls spinner
     const onCharLoading = () => {
         setState({
             ...state,
@@ -39,13 +42,15 @@ const RandomChar = () => {
             error: false
         })
     }
-
+    //func that called in Error
     const onError = () => {
         setState({
             loading: false,
             error: true
         })
     }
+
+    //Function to fetch random character 
     const updateCharr = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
         onCharLoading();
@@ -55,8 +60,11 @@ const RandomChar = () => {
             .catch(onError)
     }
     const { char, loading, error } = state;
-    const errorMessage = error ? <ErrorMessage /> : null
+    //var that creates or not Error component
+    const errorMessage = error ? <ErrorMessage /> : null;
+    //var that creates or not Spinner component
     const spinner = loading ? <Spinner /> : null;
+    //var that creates View component
     const content = !(loading || error) ? <View char={char} /> : null;
     return (
         <div className="randomchar">

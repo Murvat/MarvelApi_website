@@ -20,6 +20,7 @@ const CharList = ({ onCharSelected }) => {
         onReguest();
     }, [])
 
+    //func that we call after rendering to fetch data uses offset for pagination
     const onReguest = (offset) => {
         onCharListLoading();
         marvelService
@@ -27,19 +28,23 @@ const CharList = ({ onCharSelected }) => {
             .then(onCharListLoaded)
             .catch(onError)
     }
+
+    //during pagination
     const onCharListLoading = () => {
         setState({
             ...state,
             newItemLoading: true,
         })
     }
-
+    //func called after fetch data get served
     const onCharListLoaded = (newCharList) => {
-        console.log(newCharList)
+
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
         }
+
+
         setState(({ offset, charList }) => ({
             ...state,
             charList: [...charList, ...newCharList],
@@ -50,7 +55,7 @@ const CharList = ({ onCharSelected }) => {
         }))
     };
 
-
+    //onerror
     const onError = () => {
         setState({
             ...state,
@@ -59,7 +64,7 @@ const CharList = ({ onCharSelected }) => {
         })
     }
 
-
+    //method used to build list of elements 
     const renderItems = (arr) => {
         const items = arr.map(item => {
             let imgStyle = { 'objectFit': 'cover' };
