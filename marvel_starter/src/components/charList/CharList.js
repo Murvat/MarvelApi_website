@@ -5,6 +5,7 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Spinner from '../Spinner/Spinner';
 const CharList = ({ onCharSelected }) => {
 
+    ///
     const [state, setState] = useState({
         charList: [],
         loading: true,
