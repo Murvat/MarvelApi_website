@@ -1,39 +1,41 @@
 import md5 from 'md5';
+import { useHttp } from '../hooks/http.hook';
 
 
-class MarvelService {
+const useMarvelService = () => {
+    const { loading, request, error } = useHttp();
 
-    _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-    _apiKey = '2f40d8e3128997a1b69208e193d5b33d'
-    _privateKey = 'f190072fc4cca1a7ccecea1781f8a3e3b06bdbbc'
-    _baseOffset = 210;
+    const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+    const _apiKey = '2f40d8e3128997a1b69208e193d5b33d'
+    const _privateKey = 'f190072fc4cca1a7ccecea1781f8a3e3b06bdbbc'
+    const _baseOffset = 210;
 
     //getResource takes url as an argument then sends fetch reguest and hold it in res var,
     //Then it checks if our reguest is rejected or fulfilled.If Fulfilled then returns data in json format.
-    getResource = async (url) => {
-        let res = await fetch(url);
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status : ${res.status}`);
-        }
+    // const getResource = async (url) => {
+    //     let res = await fetch(url);
+    //     if (!res.ok) {
+    //         throw new Error(`Could not fetch ${url}, status : ${res.status}`);
+    //     }
 
-        return await res.json();
-    };
+    //     return await res.json();
+    // };
 
     //We have two functions to extract data fetched from api.First func getAllCharacters to get an array of all characters and getCharacter
     //to get just one character.Since we get all these data every character has a lot of data that we are not going to use .So we use func _transformData
     //to extract data we need.
-    getAllCharacters = async (offset = this._baseOffset) => {
-        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._authParams()}`);
-        return res.data.results.map(this._transformCharacter)
+    const getAllCharacters = async (offset = _baseOffset) => {
+        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_authParams()}`);
+        return res.data.results.map(_transformCharacter)
     }
 
     //getChar returns only one char 
-    getCharacter = async (id) => {
-        const res = await this.getResource(`${this._apiBase}characters/${id}?&${this._authParams()}`);
-        return this._transformCharacter(res.data.results[0]);
+    const getCharacter = async (id) => {
+        const res = await request(`${_apiBase}characters/${id}?&${_authParams()}`);
+        return _transformCharacter(res.data.results[0]);
     }
     //this function will be used every time when we fetch char to extract only data we need
-    _transformCharacter = (char) => {
+    const _transformCharacter = (char) => {
         return {
             id: char.id,
             name: char.name,
@@ -45,13 +47,13 @@ class MarvelService {
         }
     }
     //we use _authParams to create hash
-    _authParams = () => {
+    const _authParams = () => {
         const ts = new Date().getTime();
-        const hash = md5(ts + this._privateKey + this._apiKey);
-        return `ts=${ts}&apikey=${this._apiKey}&hash=${hash}`;
+        const hash = md5(ts + _privateKey + _apiKey);
+        return `ts=${ts}&apikey=${_apiKey}&hash=${hash}`;
     };
-
+    return { loading, error, getAllCharacters, getCharacter };
 };
 
 
-export default MarvelService
+export default useMarvelService;

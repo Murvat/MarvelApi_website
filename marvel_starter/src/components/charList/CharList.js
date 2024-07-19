@@ -3,19 +3,18 @@ import { useEffect, useState } from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Spinner from '../Spinner/Spinner';
+import useMarvelService from '../../services/MarvelService';
 const CharList = ({ onCharSelected }) => {
 
     ///
     const [state, setState] = useState({
         charList: [],
-        loading: true,
-        error: false,
         newItemLoading: false,
         offset: 210,
         charEnded: false,
     });
 
-    const marvelService = new MarvelService();
+    const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
         onReguest();
@@ -23,9 +22,8 @@ const CharList = ({ onCharSelected }) => {
 
     //func that we call after rendering to fetch data uses offset for pagination
     const onReguest = (offset) => {
-        onCharListLoading();
-        marvelService
-            .getAllCharacters(offset)
+        setNewItemLoading(true)
+        getAllCharacters(offset)
             .then(onCharListLoaded)
             .catch(onError)
     }
@@ -56,15 +54,6 @@ const CharList = ({ onCharSelected }) => {
         }))
     };
 
-    //onerror
-    const onError = () => {
-        setState({
-            ...state,
-            error: true,
-            loading: false,
-        })
-    }
-
     //method used to build list of elements 
     const renderItems = (arr) => {
         const items = arr.map(item => {
@@ -89,7 +78,7 @@ const CharList = ({ onCharSelected }) => {
         )
     }
 
-    const { charList, loading, error, offset, newItemLoading, charEnded } = state;
+    const { charList, offset, newItemLoading, charEnded } = state;
     const items = renderItems(charList);
     const errorMessage = error ? <ErrorMessage /> : null;;
     const spinner = loading ? <Spinner /> : null;

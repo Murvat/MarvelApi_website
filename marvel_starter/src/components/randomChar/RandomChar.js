@@ -1,7 +1,7 @@
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 import { useEffect, useState } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Spinner from '../Spinner/Spinner';
@@ -10,16 +10,12 @@ import Spinner from '../Spinner/Spinner';
 const RandomChar = () => {
 
 
-    const [state, setState] = useState(
-        {
-            char: {},//initial state of character that is empty before render,
-            //after  getCharacter gets full
-            loading: true,//Spinner state
-            error: false,//error state
-        }
+    const [state, setState] = useState({
+        char: {},//initial state of character that is empty before render,
+    }
     );
 
-    const marvelService = new MarvelService();
+    const { loading, error, getCharacter } = useMarvelService();
 
     useEffect(() => {
         updateCharr();
@@ -29,37 +25,17 @@ const RandomChar = () => {
     const onCharLoaded = (char) => {
         setState({
             char,
-            loading: false,
-            error: false
         })
     }
 
-    //func called before data get fetched that pulls spinner
-    const onCharLoading = () => {
-        setState({
-            ...state,
-            loading: true,
-            error: false
-        })
-    }
-    //func that called in Error
-    const onError = () => {
-        setState({
-            loading: false,
-            error: true
-        })
-    }
 
     //Function to fetch random character 
     const updateCharr = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
-        onCharLoading();
-        marvelService
-            .getCharacter(id)
+        getCharacter(id)
             .then(onCharLoaded)
-            .catch(onError)
     }
-    const { char, loading, error } = state;
+    const { char } = state;
     //var that creates or not Error component
     const errorMessage = error ? <ErrorMessage /> : null;
     //var that creates or not Spinner component
