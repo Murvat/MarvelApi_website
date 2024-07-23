@@ -3,7 +3,7 @@ import { useHttp } from '../hooks/http.hook';
 
 
 const useMarvelService = () => {
-    const { loading, request, error } = useHttp();
+    const { loading, request, error, clearError } = useHttp();
 
     const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     const _apiKey = '2f40d8e3128997a1b69208e193d5b33d'
@@ -25,21 +25,40 @@ const useMarvelService = () => {
     //to get just one character.Since we get all these data every character has a lot of data that we are not going to use .So we use func _transformData
     //to extract data we need.
     const getAllCharacters = async (offset = _baseOffset) => {
-        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_authParams()}`);
+        const res = await request(
+            `${_apiBase}characters?limit=9&offset=${offset}&${_authParams()}`);
         return res.data.results.map(_transformCharacter)
     }
 
     //getChar returns only one char 
     const getCharacter = async (id) => {
-        const res = await request(`${_apiBase}characters/${id}?&${_authParams()}`);
+        const res = await request(
+            `${_apiBase}characters/${id}?&${_authParams()}`);
         return _transformCharacter(res.data.results[0]);
     }
+
+    const getAllComics = async (offset = 0) => {
+        const res = await request(
+            `${_apiBase}comics?orderBy=issueNumber&limit=8&offset=${offset}&${_apiKey}`
+        );
+        return res.data.results.map(_transformComics);
+    }
+
+    const getComic = async (id) => {
+        const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.results[0]);
+    }
+
+
+
     //this function will be used every time when we fetch char to extract only data we need
     const _transformCharacter = (char) => {
         return {
             id: char.id,
             name: char.name,
-            description: char.description,
+            description: char.description
+                ? `${char.description.slice(0, 210)}...`
+                : "There is no description for this character",
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
             homepage: char.urls[0].url,
             wiki: char.urls[1].url,
@@ -52,7 +71,15 @@ const useMarvelService = () => {
         const hash = md5(ts + _privateKey + _apiKey);
         return `ts=${ts}&apikey=${_apiKey}&hash=${hash}`;
     };
-    return { loading, error, getAllCharacters, getCharacter };
+    return {
+        loading,
+        error,
+        clearError,
+        getAllCharacters,
+        getCharacter,
+        getAllComics,
+        getComic,
+    };
 };
 
 

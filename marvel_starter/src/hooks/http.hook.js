@@ -16,6 +16,7 @@ export const useHttp = () => {
         headers = { 'Content-Type': 'application/' }) => {
 
         setLoading(true);
+
         try {
             const response = await fetch(url, { method, body, headers })
 

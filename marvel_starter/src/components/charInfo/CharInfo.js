@@ -1,7 +1,6 @@
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
 import { useEffect, useState } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 
 
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
@@ -10,66 +9,37 @@ import Skeleton from '../skeleton/Skeleton';
 
 
 
-const CharInfo = ({ charId }) => {
-    const [state, setState] = useState({
-        char: null,
-        loading: false,
-        error: false,
-    }
-    )
+const CharInfo = (props) => {
+    const [char, setChar] = useState(null);
 
-    const marvelService = new MarvelService();
+    const { loading, error, getCharacter, clearError } = useMarvelService();
 
 
     useEffect(
-        () => updateChar(), [charId])
+        () => updateChar(),
+        [props.charId])
 
 
     const updateChar = () => {
+        const { charId } = props;
         if (!charId) {
             return;
         };
-        console.log(charId)
-        onCharLoading();
-
-        marvelService
-            .getCharacter(charId)
+        clearError();
+        getCharacter(charId)
             .then(onCharLoaded)
-            .catch(onError)
-
     };
 
 
     const onCharLoaded = (char) => {
-        setState({
-            char,
-            loading: false,
-            error: false,
-
-        })
+        setChar(char);
     };
-    const onCharLoading = () => {
-        setState({
-            ...state,
-            loading: true,
-            error: false,
-        })
-    };
-    const onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        })
-    }
 
 
-    const { char, loading, error } = state
     const skeleton = char || loading || error ? null : <Skeleton />;
     const errorMessage = error ? <ErrorMessage /> : null;;
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) && char ? <View char={char} /> : null;
-
-    return (
+    const content = !(loading || error || !char) ? <View char={char} /> : null; return (
         <div className="char__info">
             {skeleton}
             {errorMessage}

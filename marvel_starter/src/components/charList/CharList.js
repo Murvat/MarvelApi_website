@@ -1,72 +1,81 @@
 import './charList.scss';
-import { useEffect, useState } from 'react';
-import MarvelService from '../../services/MarvelService';
+import { useEffect, useState, useRef } from 'react';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import Spinner from '../Spinner/Spinner';
 import useMarvelService from '../../services/MarvelService';
-const CharList = ({ onCharSelected }) => {
+const CharList = (props) => {
 
     ///
-    const [state, setState] = useState({
-        charList: [],
-        newItemLoading: false,
-        offset: 210,
-        charEnded: false,
-    });
+    const [charList, setCharList] = useState([]);
+    const [newItemLoading, setNewItemLoading] = useState(false);
+    const [offset, setOffset] = useState(210);
+    const [charEnded, setCharEnded] = useState(false);
 
     const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onReguest();
+        onReguest(offset, true);
     }, [])
 
     //func that we call after rendering to fetch data uses offset for pagination
-    const onReguest = (offset) => {
-        setNewItemLoading(true)
+    const onReguest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true)
         getAllCharacters(offset)
             .then(onCharListLoaded)
-            .catch(onError)
     }
 
-    //during pagination
-    const onCharListLoading = () => {
-        setState({
-            ...state,
-            newItemLoading: true,
-        })
-    }
     //func called after fetch data get served
     const onCharListLoaded = (newCharList) => {
 
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
-        }
+        };
 
+        setCharList(charList => [...charList, ...newCharList]);
+        setNewItemLoading(newItemLoading => false);
+        setOffset(offset => offset + 9);
+        setCharEnded(charEnded => ended);
 
-        setState(({ offset, charList }) => ({
-            ...state,
-            charList: [...charList, ...newCharList],
-            loading: false,
-            newItemLoading: false,
-            offset: offset + 9,
-            charEnded: ended
-        }))
     };
+    const itemRefs = useRef([]);
+
+    focusOnItem = (id) => {
+        // Я реализовал вариант чуть сложнее, и с классом и с фокусом
+        // Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
+        // На самом деле, решение с css-классом можно сделать, вынеся персонажа
+        // в отдельный компонент. Но кода будет больше, появится новое состояние
+        // и не факт, что мы выиграем по оптимизации за счет бОльшего кол-ва элементов
+
+        // По возможности, не злоупотребляйте рефами, только в крайних случаях        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current[id].classList.add('char__item_selected');
+        itemRefs.current[id].focus();
+    }
 
     //method used to build list of elements 
-    const renderItems = (arr) => {
-        const items = arr.map(item => {
+    function renderItems(arr) {
+        const items = arr.map((item, i) => {
             let imgStyle = { 'objectFit': 'cover' };
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = { 'objectFit': 'unset' };
-            };
+            }
 
             return (
                 <li
                     className="char__item"
+                    tabIndex={0}
+                    ref={el => itemRefs.current[i] = el}
                     key={item.id}
-                    onClick={() => onCharSelected(item.id)}>
+                    onClick={() => {
+                        props.onCharSelected(item.id);
+                        focusOnItem(i);
+                    }}
+                    onPress={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            props.onCharSelected(item.id);
+                            focusOnItem(i);
+                        }
+                    }}>
                     <img src={item.thumbnail} alt={item.name} style={imgStyle} />
                     <div className="char__name">{item.name}</div>
                 </li>
@@ -79,16 +88,14 @@ const CharList = ({ onCharSelected }) => {
         )
     }
 
-    const { charList, offset, newItemLoading, charEnded } = state;
     const items = renderItems(charList);
     const errorMessage = error ? <ErrorMessage /> : null;;
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? items : null;
     return (
         <div className="char__list">
             {errorMessage}
             {spinner}
-            {content}
+            {items}
             <button
                 disabled={newItemLoading}
                 style={{ 'display': charEnded ? 'none' : 'block' }}

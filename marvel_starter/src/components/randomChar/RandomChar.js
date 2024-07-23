@@ -9,33 +9,33 @@ import Spinner from '../Spinner/Spinner';
 
 const RandomChar = () => {
 
+    const [char, setChar] = useState(null);
 
-    const [state, setState] = useState({
-        char: {},//initial state of character that is empty before render,
-    }
-    );
-
-    const { loading, error, getCharacter } = useMarvelService();
+    const { loading, error, getCharacter, clearError } = useMarvelService();
 
     useEffect(() => {
         updateCharr();
+        const timerId = setInterval(updateCharr, 6000);
+        return () => {
+            clearInterval(timerId)
+        }
     }, []);
 
     //func called after data get fetched 
     const onCharLoaded = (char) => {
-        setState({
+        setChar(
             char,
-        })
+        )
     }
 
 
     //Function to fetch random character 
     const updateCharr = () => {
+        clearError();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
         getCharacter(id)
             .then(onCharLoaded)
     }
-    const { char } = state;
     //var that creates or not Error component
     const errorMessage = error ? <ErrorMessage /> : null;
     //var that creates or not Spinner component
