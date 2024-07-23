@@ -12,8 +12,8 @@ const AppHeader = () => {
             </h1>
             <nav className="app__menu">
                 <ul>
-                    <li><NavLink exact activeStyle={{ 'color': '#9f0013' }} to="/">Characters</NavLink></li>
-                    <li><NavLink activeStyle={{ 'color': '#9f0013' }} to="/comics">Comics</NavLink></li>
+                    <li><NavLink activestyle={{ 'color': '#9f0013' }} to="/">Characters</NavLink></li>
+                    <li><NavLink activestyle={{ 'color': '#9f0013' }} to="/comics">Comics</NavLink></li>
                 </ul>
             </nav>
         </header>

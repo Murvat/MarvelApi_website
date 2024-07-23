@@ -4,6 +4,10 @@ import useMarvelService from "../../services/MarvelService";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import Spinner from "../Spinner/Spinner";
 
+import './singleComicPage.scss';
+import AppBanner from '../appBanner/AppBanner';
+import { Link } from 'react-router-dom';
+
 
 
 const SingleComicPage = () => {

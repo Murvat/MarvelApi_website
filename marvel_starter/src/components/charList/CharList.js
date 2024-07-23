@@ -1,11 +1,12 @@
-import './charList.scss';
-import { useEffect, useState, useRef } from 'react';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { useState, useEffect, useRef } from 'react';
+
 import Spinner from '../Spinner/Spinner';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
+import './charList.scss';
+
 const CharList = (props) => {
 
-    ///
     const [charList, setCharList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
@@ -14,45 +15,44 @@ const CharList = (props) => {
     const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onReguest(offset, true);
+        onRequest(offset, true);
     }, [])
 
-    //func that we call after rendering to fetch data uses offset for pagination
-    const onReguest = (offset, initial) => {
-        initial ? setNewItemLoading(false) : setNewItemLoading(true)
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
             .then(onCharListLoaded)
     }
 
-    //func called after fetch data get served
     const onCharListLoaded = (newCharList) => {
-
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
-        };
+        }
 
         setCharList(charList => [...charList, ...newCharList]);
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + 9);
         setCharEnded(charEnded => ended);
+    }
 
-    };
     const itemRefs = useRef([]);
 
-    focusOnItem = (id) => {
+    const focusOnItem = (id) => {
         // Я реализовал вариант чуть сложнее, и с классом и с фокусом
         // Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
         // На самом деле, решение с css-классом можно сделать, вынеся персонажа
         // в отдельный компонент. Но кода будет больше, появится новое состояние
         // и не факт, что мы выиграем по оптимизации за счет бОльшего кол-ва элементов
 
-        // По возможности, не злоупотребляйте рефами, только в крайних случаях        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        // По возможности, не злоупотребляйте рефами, только в крайних случаях
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
         itemRefs.current[id].classList.add('char__item_selected');
         itemRefs.current[id].focus();
     }
 
-    //method used to build list of elements 
+    // Этот метод создан для оптимизации, 
+    // чтобы не помещать такую конструкцию в метод render
     function renderItems(arr) {
         const items = arr.map((item, i) => {
             let imgStyle = { 'objectFit': 'cover' };
@@ -70,7 +70,7 @@ const CharList = (props) => {
                         props.onCharSelected(item.id);
                         focusOnItem(i);
                     }}
-                    onPress={(e) => {
+                    onKeyPress={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
                             props.onCharSelected(item.id);
                             focusOnItem(i);
@@ -81,6 +81,7 @@ const CharList = (props) => {
                 </li>
             )
         });
+        // А эта конструкция вынесена для центровки спиннера/ошибки
         return (
             <ul className="char__grid">
                 {items}
@@ -89,22 +90,25 @@ const CharList = (props) => {
     }
 
     const items = renderItems(charList);
-    const errorMessage = error ? <ErrorMessage /> : null;;
-    const spinner = loading ? <Spinner /> : null;
+
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading && !newItemLoading ? <Spinner /> : null;
+
     return (
         <div className="char__list">
             {errorMessage}
             {spinner}
             {items}
             <button
+                className="button button__main button__long"
                 disabled={newItemLoading}
                 style={{ 'display': charEnded ? 'none' : 'block' }}
-                onClick={() => onReguest(offset)}
-                className="button button__main button__long">
+                onClick={() => onRequest(offset)}>
                 <div className="inner">load more</div>
             </button>
-        </div >
+        </div>
     )
 }
+
 
 export default CharList;

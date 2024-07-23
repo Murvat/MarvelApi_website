@@ -1,47 +1,40 @@
-import './randomChar.scss';
-import mjolnir from '../../resources/img/mjolnir.png';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import Spinner from '../Spinner/Spinner';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
 
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import Spinner from '../Spinner/Spinner';
-
+import './randomChar.scss';
+import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar = () => {
 
     const [char, setChar] = useState(null);
-
     const { loading, error, getCharacter, clearError } = useMarvelService();
 
     useEffect(() => {
-        updateCharr();
-        const timerId = setInterval(updateCharr, 6000);
+        updateChar();
+        const timerId = setInterval(updateChar, 60000);
+
         return () => {
             clearInterval(timerId)
         }
-    }, []);
+    }, [])
 
-    //func called after data get fetched 
     const onCharLoaded = (char) => {
-        setChar(
-            char,
-        )
+        setChar(char);
     }
 
-
-    //Function to fetch random character 
-    const updateCharr = () => {
+    const updateChar = () => {
         clearError();
-        const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000)
+        const id = Math.floor(Math.random() * (1011400 - 1011000)) + 1011000;
         getCharacter(id)
-            .then(onCharLoaded)
+            .then(onCharLoaded);
     }
-    //var that creates or not Error component
+
     const errorMessage = error ? <ErrorMessage /> : null;
-    //var that creates or not Spinner component
     const spinner = loading ? <Spinner /> : null;
-    //var that creates View component
-    const content = !(loading || error) ? <View char={char} /> : null;
+    const content = !(loading || error || !char) ? <View char={char} /> : null;
+
     return (
         <div className="randomchar">
             {errorMessage}
@@ -55,9 +48,7 @@ const RandomChar = () => {
                 <p className="randomchar__title">
                     Or choose another one
                 </p>
-                <button
-                    className="button button__main"
-                    onClick={updateCharr}>
+                <button onClick={updateChar} className="button button__main">
                     <div className="inner">try it</div>
                 </button>
                 <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
@@ -72,22 +63,25 @@ const View = ({ char }) => {
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
         imgStyle = { 'objectFit': 'contain' };
     }
-    return (<div className="randomchar__block">
-        <img src={thumbnail} alt="Random character" className="randomchar__img" style={imgStyle} />
-        <div className="randomchar__info">
-            <p className="randomchar__name">{name}</p>
-            <p className="randomchar__descr">
-                {description}                    </p>
-            <div className="randomchar__btns">
-                <a href={homepage} className="button button__main">
-                    <div className="inner">homepage</div>
-                </a>
-                <a href={wiki} className="button button__secondary">
-                    <div className="inner">Wiki</div>
-                </a>
+
+    return (
+        <div className="randomchar__block">
+            <img src={thumbnail} alt="Random character" className="randomchar__img" style={imgStyle} />
+            <div className="randomchar__info">
+                <p className="randomchar__name">{name}</p>
+                <p className="randomchar__descr">
+                    {description}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={homepage} className="button button__main">
+                        <div className="inner">homepage</div>
+                    </a>
+                    <a href={wiki} className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     )
 }
 

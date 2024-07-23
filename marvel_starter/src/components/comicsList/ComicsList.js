@@ -1,13 +1,11 @@
-import './comicsList.scss';
-
-
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../Spinner/Spinner';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { useState } from 'react';
-import { off } from 'process';
+
+import './comicsList.scss';
 
 const ComicsList = () => {
 
@@ -18,11 +16,15 @@ const ComicsList = () => {
 
     const { loading, error, getAllComics } = useMarvelService();
 
+    useEffect(() => {
+        onRequest(offset, true);
+    }, [])
+
     const onRequest = (offset, initial) => {
         initial ? setnewItemLoading(false) : setnewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
-    };
+    }
 
     const onComicsListLoaded = (newComicsList) => {
         let ended = false;
@@ -33,8 +35,7 @@ const ComicsList = () => {
         setnewItemLoading(false);
         setOffset(offset + 8);
         setComicsEnded(ended);
-    };
-
+    }
 
     function renderItems(arr) {
         const items = arr.map((item, i) => {

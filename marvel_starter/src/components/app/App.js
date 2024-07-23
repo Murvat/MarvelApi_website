@@ -22,7 +22,7 @@ const App = () => {
                             <Route exact path='/' element={<MainPage />} />
                             <Route exact path='/comics' element={<ComicsPage />} />
                             <Route exact path='/comics/:comicId' element={<SingleComicPage />} />
-                            <Route exact path='*' element={<Page404 />} />
+                            <Route path='*' element={<Page404 />} />
                         </Routes>
                     </Suspense>
                 </main>
