@@ -9,8 +9,8 @@ import AppBanner from '../appBanner/AppBanner';
 import { Link } from 'react-router-dom';
 
 
-
 const SingleComicPage = () => {
+
     const { comicId } = useParams();
     const [comic, setComic] = useState(null);
     const { loading, error, getComic, clearError } = useMarvelService();
