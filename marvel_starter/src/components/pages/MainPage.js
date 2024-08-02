@@ -13,7 +13,7 @@ const MainPage = () => {
     const onCharSelected = (id) => {
         setChar(id);
     }
-    ///////////////
+    //////
     return (
         <>
             <ErrorBoundary>
