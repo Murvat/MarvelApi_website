@@ -14,25 +14,25 @@ const MainPage = () => {
         setChar(id);
     }
 
-./////
-    return (
-        <>
+./////////
+return (
+    <>
+        <ErrorBoundary>
+            <RandomChar />
+        </ErrorBoundary>
+
+        <div className="char__content">
             <ErrorBoundary>
-                <RandomChar />
+                <CharList onCharSelected={onCharSelected} />
             </ErrorBoundary>
+            <ErrorBoundary>
+                <CharInfo charId={selectedChar} />
+            </ErrorBoundary>
+        </div>
+        <img src={decoration} alt="vision" className="bg-decoration" />
+    </>
 
-            <div className="char__content">
-                <ErrorBoundary>
-                    <CharList onCharSelected={onCharSelected} />
-                </ErrorBoundary>
-                <ErrorBoundary>
-                    <CharInfo charId={selectedChar} />
-                </ErrorBoundary>
-            </div>
-            <img src={decoration} alt="vision" className="bg-decoration" />
-        </>
-
-    )
+)
 };
 
 export default MainPage;
