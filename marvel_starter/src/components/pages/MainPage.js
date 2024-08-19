@@ -14,13 +14,12 @@ const MainPage = () => {
         setChar(id);
     }
 
-    ////
+    /** */
     return (
         <>
             <ErrorBoundary>
                 <RandomChar />
             </ErrorBoundary>
-
             <div className="char__content">
                 <ErrorBoundary>
                     <CharList onCharSelected={onCharSelected} />
