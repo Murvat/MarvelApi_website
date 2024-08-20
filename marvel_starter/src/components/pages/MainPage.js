@@ -5,7 +5,7 @@ import decoration from '../../resources/img/vision.png';
 import CharList from "../charList/CharList";
 import ErrorBoundary from '../ErrorBoundary/errorBoundary'
 import CharInfo from '../charInfo/CharInfo'
-
+/////
 const MainPage = () => {
 
     const [selectedChar, setChar] = useState(null);
